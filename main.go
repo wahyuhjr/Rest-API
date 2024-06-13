@@ -1,42 +1,31 @@
 package main
 
 import (
+	"net/http"
+
 	"github.com/gin-gonic/gin"
+	executionTimeController "github.com/wahyuhjr-restapi-kpi/controllers/execututionTimeController"
+	"github.com/wahyuhjr-restapi-kpi/models"
 )
 
-// tes
+func CheckDatabase(c *gin.Context) {
+	err := models.DB.Ping()
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"message": "Database is not connected",
+		})
+	}
+	c.JSON(http.StatusOK, gin.H{
+		"message": "Database is connected",
+	})
+}
+
 func main() {
+	models.ConnectDatabase()
+
 	router := gin.Default()
-	router.GET("/", func(ctx *gin.Context) {
-		ctx.JSON(200, gin.H{
-			"Success": true,
-		})
-	})
-
-	router.POST("/create", func(ctx *gin.Context) {
-		ctx.JSON(200, gin.H{
-			"Success": true,
-		})
-	})
-
-	router.GET("/show", func(ctx *gin.Context) {
-		ctx.JSON(200, gin.H{
-			"Success": true,
-		})
-	})
-
-	router.PUT("/update", func(ctx *gin.Context) {
-		ctx.JSON(200, gin.H{
-			"Success": true,
-		})
-	})
-
-	router.DELETE("/delete", func(ctx *gin.Context) {
-		ctx.JSON(200, gin.H{
-			"Success": true,
-		})
-	})
+	router.GET("/ping", CheckDatabase)
+	router.GET("/executiontime", executionTimeController.GetExecutionTime)
 
 	router.Run(":8000")
-
 }
