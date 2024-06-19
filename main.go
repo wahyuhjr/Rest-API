@@ -4,7 +4,7 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
-	executionTimeController "github.com/wahyuhjr-restapi-kpi/controllers/execututionTimeController"
+	executionTimeHandler "github.com/wahyuhjr-restapi-kpi/handlers/executionTimeHandler"
 	"github.com/wahyuhjr-restapi-kpi/models"
 )
 
@@ -22,10 +22,16 @@ func CheckDatabase(c *gin.Context) {
 
 func main() {
 	models.ConnectDatabase()
+	// Initialize app with dependencies
+	app := executionTimeHandler.NewApp(models.DB)
 
 	router := gin.Default()
 	router.GET("/ping", CheckDatabase)
-	router.GET("/executiontime", executionTimeController.GetExecutionTime)
+	router.GET("/executiontime", app.GetExecutionTime)
+	router.GET("/executiontime/:id", app.GetExecutionTimeByID)
+	router.POST("/executiontime/create", app.CreateExecutionTime)
+	router.DELETE("/executiontime/delete/:id", app.DeleteExecutionTime)
+	router.PUT("/executiontime/update/:id", app.UpdateExecutionTime)
 
 	router.Run(":8000")
 }

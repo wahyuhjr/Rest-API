@@ -32,15 +32,17 @@ func getConnectionString() string {
 	)
 }
 
-func ConnectDatabase() {
+func ConnectDatabase() error {
 	connectionString := getConnectionString()
 	var err error
-	DB, err = sql.Open(("postgres"), connectionString)
+	DB, err = sql.Open("postgres", connectionString)
 	if err != nil {
-		log.Fatal("Failed to connect to database:", err)
+		return fmt.Errorf("failed to connect to database: %v", err)
 	}
 	err = DB.Ping()
 	if err != nil {
-		log.Fatal("Failed to ping to database:", err)
+		return fmt.Errorf("failed to ping database: %v", err)
 	}
+	fmt.Println("Connected to database!")
+	return nil
 }

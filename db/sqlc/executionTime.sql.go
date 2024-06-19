@@ -7,27 +7,26 @@ package sqlc
 
 import (
 	"context"
-	"database/sql"
 )
 
 const createExecutionTime = `-- name: CreateExecutionTime :one
-INSERT INTO execution_time (parameter, value,test, deviation)
+INSERT INTO execution_time (parameter,test,value, deviation)
 VALUES ($1, $2, $3, $4)
 RETURNING id, parameter, test, value, deviation
 `
 
 type CreateExecutionTimeParams struct {
-	Parameter sql.NullString `json:"parameter"`
-	Value     sql.NullString `json:"value"`
-	Test      sql.NullString `json:"test"`
-	Deviation sql.NullString `json:"deviation"`
+	Parameter string `json:"parameter"`
+	Test      string `json:"test"`
+	Value     float32 `json:"value"`
+	Deviation float32 `json:"deviation"`
 }
 
 func (q *Queries) CreateExecutionTime(ctx context.Context, arg CreateExecutionTimeParams) (ExecutionTime, error) {
 	row := q.db.QueryRowContext(ctx, createExecutionTime,
 		arg.Parameter,
-		arg.Value,
 		arg.Test,
+		arg.Value,
 		arg.Deviation,
 	)
 	var i ExecutionTime
@@ -59,12 +58,12 @@ func (q *Queries) DeleteExecutionTime(ctx context.Context, id int32) (ExecutionT
 	return i, err
 }
 
-const getExecutionTime = `-- name: GetExecutionTime :one
+const getExecutionTimeByID = `-- name: GetExecutionTimeByID :one
 SELECT id, parameter, test, value, deviation FROM execution_time WHERE id = $1
 `
 
-func (q *Queries) GetExecutionTime(ctx context.Context, id int32) (ExecutionTime, error) {
-	row := q.db.QueryRowContext(ctx, getExecutionTime, id)
+func (q *Queries) GetExecutionTimeByID(ctx context.Context, id int32) (ExecutionTime, error) {
+	row := q.db.QueryRowContext(ctx, getExecutionTimeByID, id)
 	var i ExecutionTime
 	err := row.Scan(
 		&i.ID,
@@ -111,17 +110,17 @@ func (q *Queries) GetExecutionTimes(ctx context.Context) ([]ExecutionTime, error
 
 const updateExecutionTime = `-- name: UpdateExecutionTime :one
 UPDATE execution_time
-SET parameter = $2, value = $3, test = $4, deviation = $5
+SET parameter = $2, test = $4, value = $3,  deviation = $5
 WHERE id = $1
 RETURNING id, parameter, test, value, deviation
 `
 
 type UpdateExecutionTimeParams struct {
 	ID        int32          `json:"id"`
-	Parameter sql.NullString `json:"parameter"`
-	Value     sql.NullString `json:"value"`
-	Test      sql.NullString `json:"test"`
-	Deviation sql.NullString `json:"deviation"`
+	Parameter string `json:"parameter"`
+	Test      string `json:"test"`
+	Value     float32 `json:"value"`
+	Deviation float32 `json:"deviation"`
 }
 
 func (q *Queries) UpdateExecutionTime(ctx context.Context, arg UpdateExecutionTimeParams) (ExecutionTime, error) {
