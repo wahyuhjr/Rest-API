@@ -72,29 +72,7 @@ func (app *App) CreateExecutionTime(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, gin.H{"message": "Failed to create execution time", "error": err.Error()})
 		return
 	}
-	c.JSON(http.StatusOK, gin.H{"message": "Execution time created successfully"})
-}
-
-// DeleteExecutionTime handles the request to delete an execution time by ID
-func (app *App) DeleteExecutionTime(c *gin.Context) {
-	idStr := c.Param("id")
-	id, err := strconv.Atoi(idStr)
-	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"message": "Invalid ID format"})
-		return
-	}
-
-	executionTime, err := app.Queries.DeleteExecutionTime(context.Background(), int32(id))
-	if err != nil {
-		if err == sql.ErrNoRows {
-			c.JSON(http.StatusNotFound, gin.H{"message": "No data found"})
-			return
-		}
-		log.Printf("Failed to execute query: %v", err)
-		c.JSON(http.StatusInternalServerError, gin.H{"message": "Failed to execute query"})
-		return
-	}
-	c.JSON(http.StatusOK, gin.H{"message": "Execution time deleted successfully", "execution_time": executionTime})
+	c.JSON(http.StatusOK, gin.H{"message": "Execution time created successfully", "execution_time": newExecutionTime})
 }
 
 // UpdateExecutionTime handles the request to update an execution time by ID
@@ -127,5 +105,27 @@ func (app *App) UpdateExecutionTime(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{"message": "Execution time updated successfully"})
+	c.JSON(http.StatusOK, gin.H{"message": "Execution time updated successfully", "execution_time": updateExecutionTime})
+}
+
+// DeleteExecutionTime handles the request to delete an execution time by ID
+func (app *App) DeleteExecutionTime(c *gin.Context) {
+	idStr := c.Param("id")
+	id, err := strconv.Atoi(idStr)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"message": "Invalid ID format"})
+		return
+	}
+
+	executionTime, err := app.Queries.DeleteExecutionTime(context.Background(), int32(id))
+	if err != nil {
+		if err == sql.ErrNoRows {
+			c.JSON(http.StatusNotFound, gin.H{"message": "No data found"})
+			return
+		}
+		log.Printf("Failed to execute query: %v", err)
+		c.JSON(http.StatusInternalServerError, gin.H{"message": "Failed to execute query"})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{"message": "Execution time deleted successfully", "execution_time": executionTime})
 }

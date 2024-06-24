@@ -4,6 +4,7 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
+	convertExcelHandler "github.com/wahyuhjr-restapi-kpi/handlers/convertExcelHandler"
 	executionTimeHandler "github.com/wahyuhjr-restapi-kpi/handlers/executionTimeHandler"
 	"github.com/wahyuhjr-restapi-kpi/models"
 )
@@ -24,6 +25,7 @@ func main() {
 	models.ConnectDatabase()
 	// Initialize app with dependencies
 	app := executionTimeHandler.NewApp(models.DB)
+	appConvert := convertExcelHandler.NewApp(app.Queries)
 
 	router := gin.Default()
 	router.GET("/ping", CheckDatabase)
@@ -32,6 +34,6 @@ func main() {
 	router.POST("/executiontime/create", app.CreateExecutionTime)
 	router.DELETE("/executiontime/delete/:id", app.DeleteExecutionTime)
 	router.PUT("/executiontime/update/:id", app.UpdateExecutionTime)
-
+	router.GET("/convert-excel", appConvert.ConvertExcel)
 	router.Run(":8000")
 }

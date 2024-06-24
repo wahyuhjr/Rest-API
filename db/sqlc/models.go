@@ -12,6 +12,6 @@ type ExecutionTime struct {
 	ID        int32          `json:"id"`
 	Parameter sql.NullString `json:"parameter"`
 	Test      sql.NullString `json:"test"`
-	Value     sql.NullString `json:"value"`
-	Deviation sql.NullString `json:"deviation"`
+	Value     sql.NullFloat64 `json:"value"`
+	Deviation sql.NullFloat64 `json:"deviation"`
 }
